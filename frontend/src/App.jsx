@@ -84,12 +84,22 @@ export default function App() {
   }
 
   function loadHistoryJob(historyJob) {
-    setShowingHistory(true)
-    setActiveJob(historyJob)
-    setOutputs(historyJob.outputs || [])
-    if (pollRef.current) {
-      clearInterval(pollRef.current)
-      pollRef.current = null
+    try {
+      setShowingHistory(true)
+      setActiveJob(historyJob)
+      
+      // Ensure outputs is a valid array
+      const historyOutputs = historyJob.outputs || []
+      const validOutputs = Array.isArray(historyOutputs) ? historyOutputs.filter(output => output && typeof output === 'object') : []
+      setOutputs(validOutputs)
+      
+      if (pollRef.current) {
+        clearInterval(pollRef.current)
+        pollRef.current = null
+      }
+    } catch (err) {
+      console.error('Error loading history job:', err)
+      setError('Failed to load history job')
     }
   }
 
@@ -111,10 +121,14 @@ export default function App() {
       if (!res.ok) throw new Error(`job-status HTTP ${res.status}`)
       const data = await res.json()
       const newOutputs = data.outputs || []
-      if (newOutputs.length > lastOutputCount.current) {
-        const toAdd = newOutputs.slice(lastOutputCount.current)
+      
+      // Ensure newOutputs is an array and contains valid objects
+      const validOutputs = Array.isArray(newOutputs) ? newOutputs.filter(output => output && typeof output === 'object') : []
+      
+      if (validOutputs.length > lastOutputCount.current) {
+        const toAdd = validOutputs.slice(lastOutputCount.current)
         setOutputs(prev => [...prev, ...toAdd])
-        lastOutputCount.current = newOutputs.length
+        lastOutputCount.current = validOutputs.length
       }
       setActiveJob(data)
       setShowingHistory(false)
@@ -123,7 +137,7 @@ export default function App() {
       if (data.status === 'completed' || data.status === 'failed') {
         const jobToSave = {
           ...data,
-          outputs: newOutputs,
+          outputs: validOutputs,
           timestamp: data.timestamp || new Date().toISOString()
         }
         saveJobToHistory(jobToSave)
@@ -133,6 +147,7 @@ export default function App() {
         }
       }
     } catch (err) {
+      console.error('Error fetching job status:', err)
       setError(err.message)
     }
   }
@@ -206,26 +221,28 @@ export default function App() {
             <span>Recent Jobs</span>
           </div>
           <div className="px-2 space-y-0.5 overflow-y-auto max-h-32">
-            {jobs.slice().reverse().map(job => (
-              <button
-                key={job.id}
-                onClick={() => {
-                  if (pollRef.current) clearInterval(pollRef.current);
-                  lastOutputCount.current = 0;
-                  setOutputs([]);
-                  fetchJobStatus(job.id);
-                }}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-xs rounded-md transition-colors ${
-                  activeJob?.id === job.id && !showingHistory
-                    ? 'bg-border-dark text-white' 
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
-                }`}
-              >
-                <StatusIcon status={job.status} size={14} />
-                <span className="truncate font-mono">{job.id.slice(0, 8)}...</span>
-              </button>
-            ))}
-            {jobs.length === 0 && (
+            {jobs && jobs.length > 0 ? jobs.slice().reverse().map(job => (
+              job && job.id ? (
+                <button
+                  key={job.id}
+                  onClick={() => {
+                    if (pollRef.current) clearInterval(pollRef.current);
+                    lastOutputCount.current = 0;
+                    setOutputs([]);
+                    fetchJobStatus(job.id);
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-xs rounded-md transition-colors ${
+                    activeJob?.id === job.id && !showingHistory
+                      ? 'bg-border-dark text-white' 
+                      : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
+                  }`}
+                >
+                  <StatusIcon status={job.status || 'unknown'} size={14} />
+                  <span className="truncate font-mono">{job.id.slice(0, 8)}...</span>
+                </button>
+              ) : null
+            )) : null}
+            {(!jobs || jobs.length === 0) && (
               <div className="px-3 py-2 text-xs text-gray-500 italic">
                 No recent jobs
               </div>
@@ -245,34 +262,36 @@ export default function App() {
             )}
           </div>
           <div className="px-2 space-y-0.5 overflow-y-auto flex-1">
-            {historyJobs.map(job => (
-              <button
-                key={`history-${job.id}`}
-                onClick={() => loadHistoryJob(job)}
-                className={`w-full flex flex-col gap-1 px-3 py-2 text-xs rounded-md transition-colors ${
-                  activeJob?.id === job.id && showingHistory
-                    ? 'bg-border-dark text-white' 
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
-                }`}
-              >
-                <div className="flex items-center gap-2 w-full">
-                  <StatusIcon status={job.status} size={14} />
-                  <span className="truncate font-mono flex-1">{job.id.slice(0, 8)}...</span>
-                  <HistoryIcon size={12} className="text-gray-500" />
-                </div>
-                {job.timestamp && (
-                  <div className="text-xs text-gray-600 text-left">
-                    {new Date(job.timestamp).toLocaleDateString()} {new Date(job.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+            {historyJobs && historyJobs.length > 0 ? historyJobs.map(job => (
+              job && job.id ? (
+                <button
+                  key={`history-${job.id}`}
+                  onClick={() => loadHistoryJob(job)}
+                  className={`w-full flex flex-col gap-1 px-3 py-2 text-xs rounded-md transition-colors ${
+                    activeJob?.id === job.id && showingHistory
+                      ? 'bg-border-dark text-white' 
+                      : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <StatusIcon status={job.status || 'unknown'} size={14} />
+                    <span className="truncate font-mono flex-1">{job.id.slice(0, 8)}...</span>
+                    <HistoryIcon size={12} className="text-gray-500" />
                   </div>
-                )}
-                {job.pr_url && (
-                  <div className="text-xs text-gray-600 text-left truncate">
-                    {job.pr_url.split('/').slice(-2).join('/')}
-                  </div>
-                )}
-              </button>
-            ))}
-            {historyJobs.length === 0 && (
+                  {job.timestamp && (
+                    <div className="text-xs text-gray-600 text-left">
+                      {new Date(job.timestamp).toLocaleDateString()} {new Date(job.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                  )}
+                  {job.pr_url && (
+                    <div className="text-xs text-gray-600 text-left truncate">
+                      {job.pr_url.split('/').slice(-2).join('/')}
+                    </div>
+                  )}
+                </button>
+              ) : null
+            )) : null}
+            {(!historyJobs || historyJobs.length === 0) && (
               <div className="px-3 py-2 text-xs text-gray-500 italic">
                 No history yet
               </div>
@@ -428,9 +447,9 @@ export default function App() {
                    </div>
                  ) : (
                    <div className="space-y-2">
-                     {outputs.map((output, idx) => (
-                       <OutputRenderer key={idx} output={output} />
-                     ))}
+                     {outputs && outputs.length > 0 ? outputs.map((output, idx) => (
+                       <OutputRenderer key={idx} output={output || {}} />
+                     )) : null}
                      {activeJob.status === 'running' && !showingHistory && (
                        <div className="flex items-center gap-2 text-gray-600 pl-2 animate-pulse">
                          <span className="w-2 h-4 bg-accent-purple/50 block"></span>

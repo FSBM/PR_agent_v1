@@ -163,6 +163,11 @@ const CodeBlock = ({ children, className, ...props }) => {
 }
 
 const parseStructuredContent = (message) => {
+  // Check if message is valid
+  if (!message || typeof message !== 'string') {
+    return [{ type: 'text', content: message || '' }]
+  }
+
   // Check if message contains the structured format with boxes
   const toolExecutionRegex = /╭─.*?🔧 Agent Tool Execution.*?─╮(.*?)╰.*?╯/gs
   const toolInputRegex = /╭─.*?Tool Input.*?─╮(.*?)╰.*?╯/gs
@@ -295,7 +300,7 @@ const OutputRenderer = ({ output, index }) => {
   }
 
   // Parse the message for structured content
-  const segments = parseStructuredContent(message)
+  const segments = parseStructuredContent(message) || []
 
   return (
     <div key={index} className={`p-4 rounded-lg border ${getOutputStyle(type)} mb-4`}>
@@ -310,7 +315,7 @@ const OutputRenderer = ({ output, index }) => {
       </div>
       
       <div className="space-y-4">
-        {segments.map((segment, idx) => {
+        {segments && segments.length > 0 ? segments.map((segment, idx) => {
           if (segment.type === 'text') {
             // Check if it's markdown content
             const rawContent = cleanAnsiText(segment.content)
@@ -413,7 +418,11 @@ const OutputRenderer = ({ output, index }) => {
               </ToolExecutionBox>
             )
           }
-        })}
+        }) : (
+          <pre className="whitespace-pre-wrap text-sm font-mono leading-relaxed text-gray-200">
+            {message || 'No content available'}
+          </pre>
+        )}
       </div>
     </div>
   )
