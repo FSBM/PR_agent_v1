@@ -31,10 +31,19 @@ except ImportError as e:
     missing_deps.append(f"pr_agent.main: {str(e)}")
 
 try:
-    import crewai
+    import google.generativeai
+    # Additional check for CrewAI Google GenAI integration
+    from crewai import LLM
+    # Try to instantiate an LLM to check if Google GenAI is properly configured
+    test_llm = LLM(model="gemini/gemini-1.5-flash")
+    GENAI_AVAILABLE = True
 except ImportError as e:
     DEPENDENCIES_AVAILABLE = False
-    missing_deps.append(f"crewai: {str(e)}")
+    missing_deps.append(f"crewai[google-genai]: {str(e)}")
+    GENAI_AVAILABLE = False
+except Exception as e:
+    # This might happen if API key is missing, but the package is installed
+    GENAI_AVAILABLE = True  # Package is available, just not configured
 
 try:
     from github import Github

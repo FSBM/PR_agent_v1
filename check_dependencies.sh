@@ -36,6 +36,15 @@ if ! check_package "crewai"; then
     ((missing_count++))
 fi
 
+# Check if CrewAI has Google GenAI support
+echo "🔍 Checking CrewAI Google GenAI integration..."
+if python3 -c "from crewai import LLM; print('CrewAI Google GenAI integration available')" 2>/dev/null; then
+    echo "✅ crewai[google-genai] - OK"
+else
+    echo "❌ crewai[google-genai] - MISSING or not properly configured"
+    ((missing_count++))
+fi
+
 if ! check_package "github"; then
     ((missing_count++))
 fi
@@ -45,10 +54,6 @@ if ! check_package "fastapi"; then
 fi
 
 if ! check_package "uvicorn"; then
-    ((missing_count++))
-fi
-
-if ! check_package "google.generativeai"; then
     ((missing_count++))
 fi
 

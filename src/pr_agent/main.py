@@ -18,17 +18,24 @@ def check_dependencies():
     try:
         from crewai import Crew, Process
     except ImportError as e:
-        missing_deps.append(("crewai", "pip install crewai>=0.36.0"))
+        missing_deps.append(("crewai", "pip install crewai[google-genai]>=0.36.0"))
     
     try:
         from github import Github
     except ImportError as e:
         missing_deps.append(("PyGithub", "pip install PyGithub>=1.59.1"))
     
+    # Check for CrewAI Google GenAI integration
     try:
-        import google.generativeai
+        from crewai import LLM
+        # Try to create a test LLM to ensure Google GenAI is available
+        test_llm = LLM(model="gemini/gemini-1.5-flash")
     except ImportError as e:
-        missing_deps.append(("google-generativeai", "pip install google-generativeai>=0.3.0"))
+        missing_deps.append(("crewai[google-genai]", "pip install crewai[google-genai]>=0.36.0"))
+    except Exception as e:
+        # LLM instantiation failed - likely missing API key or configuration issue
+        if "Google Gen AI native provider not available" in str(e):
+            missing_deps.append(("crewai[google-genai]", "pip install crewai[google-genai]>=0.36.0"))
     
     if missing_deps:
         print("❌ Missing required dependencies:")
