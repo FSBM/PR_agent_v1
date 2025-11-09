@@ -8,6 +8,11 @@ import contextlib
 import re
 import os
 from typing import Optional
+
+# Add parent directory to Python path so we can import src modules
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, HTMLResponse, StreamingResponse
 import json
