@@ -35,7 +35,7 @@ try:
     # Additional check for CrewAI Google GenAI integration
     from crewai import LLM
     # Try to instantiate an LLM to check if Google GenAI is properly configured
-    test_llm = LLM(model="gemini/gemini-1.5-flash")
+    test_llm = LLM(model="gemini/gemini-2.5-flash")
     GENAI_AVAILABLE = True
 except ImportError as e:
     DEPENDENCIES_AVAILABLE = False

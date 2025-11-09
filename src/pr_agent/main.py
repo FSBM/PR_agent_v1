@@ -29,7 +29,7 @@ def check_dependencies():
     try:
         from crewai import LLM
         # Try to create a test LLM to ensure Google GenAI is available
-        test_llm = LLM(model="gemini/gemini-1.5-flash")
+        test_llm = LLM(model="gemini/gemini-2.5-flash")
     except ImportError as e:
         missing_deps.append(("crewai[google-genai]", "pip install crewai[google-genai]>=0.36.0"))
     except Exception as e:
