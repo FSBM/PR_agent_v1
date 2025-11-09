@@ -13,11 +13,61 @@ from typing import Optional
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, HTMLResponse, StreamingResponse
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+# Check for dependencies and provide fallback
+DEPENDENCIES_AVAILABLE = True
+missing_deps = []
+
+try:
+    from src.pr_agent.main import main as pr_agent_main
+except ImportError as e:
+    DEPENDENCIES_AVAILABLE = False
+    missing_deps.append(f"pr_agent.main: {str(e)}")
+
+try:
+    import crewai
+except ImportError as e:
+    DEPENDENCIES_AVAILABLE = False
+    missing_deps.append(f"crewai: {str(e)}")
+
+try:
+    from github import Github
+except ImportError as e:
+    DEPENDENCIES_AVAILABLE = False
+    missing_deps.append(f"PyGithub: {str(e)}")
+
+def simulate_pr_analysis(pr_url: str, job_id: str):
+    """Simulate PR analysis when dependencies are not available"""
+    jobs[job_id]["status"] = "running"
+    jobs[job_id]["output"] = "📋 Initializing simulated agents...\n"
+    time.sleep(1)
+    
+    jobs[job_id]["output"] += "Setting up simulated tasks...\n"
+    time.sleep(1)
+    
+    jobs[job_id]["output"] += "Starting simulated PR analysis...\n"
+    time.sleep(1)
+    
+    jobs[job_id]["output"] += "Analyzing PR structure...\n"
+    time.sleep(1)
+    
+    jobs[job_id]["output"] += "Performing simulated change analysis...\n"
+    time.sleep(1)
+    
+    jobs[job_id]["output"] += "Executing simulated security review...\n"
+    time.sleep(1)
+    
+    jobs[job_id]["output"] += "Simulated analysis complete\n"
+    jobs[job_id]["output"] += "🎭 Simulation completed - install dependencies for real agent execution\n"
+    jobs[job_id]["output"] += f"🐛 Debug info: Missing dependencies: {', '.join(missing_deps)}\n"
+    
+    jobs[job_id]["status"] = "completed"
 
 app = FastAPI(title="PR Agent Runner")
 
@@ -98,6 +148,17 @@ async def index():
         return HTMLResponse(content=html)
     except Exception:
         return HTMLResponse(content="<html><body><h3>Frontend not found. See frontend/index.html</h3></body></html>")
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint that reports dependency status"""
+    return {
+        "status": "ok",
+        "dependencies_available": DEPENDENCIES_AVAILABLE,
+        "missing_dependencies": missing_deps if not DEPENDENCIES_AVAILABLE else [],
+        "mode": "production" if DEPENDENCIES_AVAILABLE else "simulation"
+    }
 
 
 def _update_job(job_id: str, **kwargs):
@@ -233,6 +294,13 @@ def _run_agent_job(job_id: str, pr_url: str):
         "╰─────────────────────────────────────────────────────────────────────────────╯"
     )
     _append_agent_output(job_id, banner, "system_init")
+
+    # Check if dependencies are available
+    if not DEPENDENCIES_AVAILABLE:
+        _append_agent_output(job_id, "⚠️ Warning: Missing dependencies - running simulation mode", "warning")
+        _append_agent_output(job_id, f"Missing: {', '.join(missing_deps)}", "warning")
+        simulate_pr_analysis(pr_url, job_id)
+        return
 
     try:
         # Attempt to import the local agent runner

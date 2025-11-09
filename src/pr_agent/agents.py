@@ -5,7 +5,20 @@ Defines specialized AI agents for different aspects of PR analysis.
 """
 
 import os
-from crewai import Agent, LLM
+
+# Try to import CrewAI components - handle gracefully if not available
+try:
+    from crewai import Agent, LLM
+    CREWAI_AVAILABLE = True
+except ImportError:
+    CREWAI_AVAILABLE = False
+    # Create dummy classes if crewai is not available
+    class Agent:
+        def __init__(self, *args, **kwargs):
+            pass
+    class LLM:
+        pass
+
 from .tools import (
     fetch_pr_diff, 
     post_pr_comment,

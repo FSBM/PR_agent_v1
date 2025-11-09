@@ -1,4 +1,13 @@
-from crewai import Task
+# Try to import CrewAI Task - handle gracefully if not available
+try:
+    from crewai import Task
+    CREWAI_AVAILABLE = True
+except ImportError:
+    CREWAI_AVAILABLE = False
+    # Create dummy Task class if crewai is not available
+    class Task:
+        def __init__(self, *args, **kwargs):
+            pass
 
 
 class PRTasks:

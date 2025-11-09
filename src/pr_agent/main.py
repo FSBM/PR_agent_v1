@@ -7,12 +7,60 @@ import sys
 import argparse
 import os
 from dotenv import load_dotenv
-from crewai import Crew, Process
-from .agents import PRAgents
-from .tasks import PRTasks
 
 # Load environment variables
 load_dotenv()
+
+def check_dependencies():
+    """Check if required dependencies are available and provide helpful error messages."""
+    missing_deps = []
+    
+    try:
+        from crewai import Crew, Process
+    except ImportError as e:
+        missing_deps.append(("crewai", "pip install crewai>=0.36.0"))
+    
+    try:
+        from github import Github
+    except ImportError as e:
+        missing_deps.append(("PyGithub", "pip install PyGithub>=1.59.1"))
+    
+    try:
+        import google.generativeai
+    except ImportError as e:
+        missing_deps.append(("google-generativeai", "pip install google-generativeai>=0.3.0"))
+    
+    if missing_deps:
+        print("❌ Missing required dependencies:")
+        for dep_name, install_cmd in missing_deps:
+            print(f"  - {dep_name}: {install_cmd}")
+        print("\nPlease install missing dependencies and try again.")
+        return False
+    
+    return True
+
+def main():
+    """
+    Main entry point for the PR-Agent CLI.
+    """
+    # Check dependencies first
+    if not check_dependencies():
+        print("\n🎭 Running in simulation mode due to missing dependencies...")
+        print("📋 Initializing simulated agents...")
+        print("Setting up simulated tasks...")
+        print("Starting simulated PR analysis...")
+        print("Analyzing PR structure...")
+        print("Performing simulated change analysis...")
+        print("Executing simulated security review...")
+        print("Simulated analysis complete")
+        print("🎭 Simulation completed - install dependencies for real agent execution")
+        print(f"🐛 Debug info: Missing required modules")
+        sys.exit(1)
+    
+    # Import here after dependency check
+    from crewai import Crew, Process
+    from .agents import PRAgents
+    from .tasks import PRTasks
 
 
 def main():
@@ -68,6 +116,11 @@ Examples:
     print("=" * 80)
     
     try:
+        # Import here after dependency check
+        from crewai import Crew, Process
+        from .agents import PRAgents
+        from .tasks import PRTasks
+        
         # Initialize agents
         print("📋 Initializing agents...")
         agents = PRAgents()

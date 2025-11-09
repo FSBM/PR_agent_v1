@@ -6,10 +6,29 @@ import tempfile
 import requests
 from typing import Type, List, Dict, Any
 from pydantic import BaseModel, Field
-from github import Github
-from crewai.tools import tool
 from dotenv import load_dotenv
 import hashlib
+
+# Try to import GitHub - handle gracefully if not available
+try:
+    from github import Github
+    GITHUB_AVAILABLE = True
+except ImportError:
+    GITHUB_AVAILABLE = False
+    Github = None
+
+# Try to import CrewAI tools - handle gracefully if not available
+try:
+    from crewai.tools import tool
+    CREWAI_AVAILABLE = True
+except ImportError:
+    CREWAI_AVAILABLE = False
+    # Define a dummy decorator if crewai is not available
+    def tool(name):
+        def decorator(func):
+            func._tool_name = name
+            return func
+        return decorator
 
 # Load environment variables
 load_dotenv()
@@ -26,6 +45,10 @@ def fetch_pr_diff(pr_url: str) -> str:
     Returns:
         str: The raw diff content as a string
     """
+    # Check if GitHub module is available
+    if not GITHUB_AVAILABLE:
+        return "Error: PyGithub module not available. Please install with: pip install PyGithub>=1.59.1"
+    
     try:
         # Parse the PR URL to extract owner, repo, and PR number
         # URL format: https://github.com/owner/repo/pull/123
@@ -91,6 +114,10 @@ def post_pr_comment(pr_url: str, comment_body: str) -> str:
     Returns:
         str: Success or error message
     """
+    # Check if GitHub module is available
+    if not GITHUB_AVAILABLE:
+        return "Error: PyGithub module not available. Please install with: pip install PyGithub>=1.59.1"
+    
     try:
         # Parse the PR URL to extract owner, repo, and PR number
         url_pattern = r"https://github\.com/([^/]+)/([^/]+)/pull/(\d+)"
