@@ -185,10 +185,10 @@ def check_dependency_vulnerabilities(pr_url: str) -> str:
                     vulnerabilities.append(vuln_result)
         
         if not vulnerabilities:
-            return f"✅ No known vulnerabilities found in {len(dependency_files)} dependency file(s)"
+            return f"[SUCCESS] No known vulnerabilities found in {len(dependency_files)} dependency file(s)"
         
         # Format vulnerability report
-        report = f"🚨 SECURITY ALERT: {len(vulnerabilities)} vulnerabilities found\n\n"
+        report = f"[SECURITY] SECURITY ALERT: {len(vulnerabilities)} vulnerabilities found\n\n"
         
         for vuln in vulnerabilities:
             report += f"**{vuln['severity'].upper()}**: {vuln['package']}\n"
@@ -227,7 +227,7 @@ def analyze_change_chunks(pr_url: str, max_chunk_size: int = 1000) -> str:
         chunks = create_change_chunks(diff_content, max_chunk_size)
         
         if len(chunks) <= 1:
-            return f"📝 Small PR: {len(chunks)} chunk, no division needed"
+            return f"[INFO] Small PR: {len(chunks)} chunk, no division needed"
         
         # Analyze each chunk
         chunk_analysis = []
@@ -237,7 +237,7 @@ def analyze_change_chunks(pr_url: str, max_chunk_size: int = 1000) -> str:
             chunk_analysis.append(analysis)
         
         # Compile comprehensive report
-        report = f"📊 LARGE PR ANALYSIS: Divided into {len(chunks)} chunks\n\n"
+        report = f"[ANALYSIS] LARGE PR ANALYSIS: Divided into {len(chunks)} chunks\n\n"
         report += "**Summary:**\n"
         
         total_files = sum(chunk['files_count'] for chunk in chunk_analysis)
@@ -254,7 +254,7 @@ def analyze_change_chunks(pr_url: str, max_chunk_size: int = 1000) -> str:
             report += f"Files: {chunk['files_count']} | Lines: {chunk['lines_changed']}\n"
             report += f"Focus areas: {', '.join(chunk['focus_areas'])}\n"
             if chunk['security_concerns']:
-                report += f"⚠️ Security concerns: {', '.join(chunk['security_concerns'])}\n"
+                report += f"[WARNING] Security concerns: {', '.join(chunk['security_concerns'])}\n"
             report += "\n"
         
         return report
@@ -309,7 +309,7 @@ def deep_security_scan(pr_url: str) -> str:
         security_findings.extend(infra_security)
         
         if not security_findings:
-            return "✅ Deep security scan completed - No critical security issues found"
+            return "[SUCCESS] Deep security scan completed - No critical security issues found"
         
         # Categorize by severity
         critical = [f for f in security_findings if f['severity'] == 'CRITICAL']
@@ -317,23 +317,23 @@ def deep_security_scan(pr_url: str) -> str:
         medium = [f for f in security_findings if f['severity'] == 'MEDIUM']
         
         # Generate comprehensive report
-        report = f"🔒 DEEP SECURITY SCAN RESULTS\n\n"
+        report = f"[SECURITY] DEEP SECURITY SCAN RESULTS\n\n"
         report += f"**Summary**: {len(critical)} Critical, {len(high)} High, {len(medium)} Medium\n\n"
         
         if critical:
-            report += "🚨 **CRITICAL SECURITY ISSUES**\n"
+            report += "[CRITICAL] **CRITICAL SECURITY ISSUES**\n"
             for issue in critical:
                 report += format_security_finding(issue)
             report += "\n"
         
         if high:
-            report += "⚠️ **HIGH SEVERITY ISSUES**\n"
+            report += "[WARNING] **HIGH SEVERITY ISSUES**\n"
             for issue in high:
                 report += format_security_finding(issue)
             report += "\n"
         
         if medium:
-            report += "⚡ **MEDIUM SEVERITY ISSUES**\n"
+            report += "[INFO] **MEDIUM SEVERITY ISSUES**\n"
             for issue in medium:
                 report += format_security_finding(issue)
         
@@ -390,10 +390,10 @@ def validate_package_integrity(pr_url: str) -> str:
                     integrity_report.append(file_analysis)
         
         if not integrity_report:
-            return "✅ No integrity issues found in dependency/configuration files"
+            return "[SUCCESS] No integrity issues found in dependency/configuration files"
         
         # Compile report
-        report = "🔍 PACKAGE INTEGRITY ANALYSIS\n\n"
+        report = "[ANALYSIS] PACKAGE INTEGRITY ANALYSIS\n\n"
         
         for analysis in integrity_report:
             report += f"**File**: {analysis['filename']}\n"

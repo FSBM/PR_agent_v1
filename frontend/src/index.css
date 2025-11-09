@@ -1,0 +1,277 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #08090A;
+  color: #d1d5db;
+  font-family: 'Geist', sans-serif;
+  font-weight: 200;
+  font-size: 16px;
+  font-feature-settings: "kern";
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Professional thin scrollbars for dashboard panels */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #374151;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563;
+}
+
+/* Terminal text utilities */
+.font-mono-dense {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.025em;
+}
+
+/* Geist font utilities */
+.geist-thin {
+  font-family: "Geist", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.geist-text-sm {
+  font-family: "Geist", sans-serif;
+  font-weight: 200;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.geist-text-base {
+  font-family: "Geist", sans-serif;
+  font-weight: 200;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.geist-text-lg {
+  font-family: "Geist", sans-serif;
+  font-weight: 200;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/* Enhanced prose styles for markdown content */
+.prose {
+  color: #e5e7eb;
+  max-width: none;
+  font-family: 'Geist', sans-serif;
+  font-weight: 200;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  color: #f9fafb;
+  font-family: 'Geist', sans-serif;
+  font-weight: 300;
+}
+
+.prose strong {
+  color: #f9fafb;
+  font-weight: 400;
+  font-family: 'Geist', sans-serif;
+}
+
+.prose em {
+  color: #d1d5db;
+  font-family: 'Geist', sans-serif;
+  font-weight: 200;
+}
+
+.prose p {
+  font-family: 'Geist', sans-serif;
+  font-weight: 200;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.prose code {
+  color: #fbbf24;
+  background-color: #374151;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+.prose pre {
+  background-color: #111827 !important;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  color: #e5e7eb;
+  border-radius: 0;
+}
+
+/* Link styles for dark theme */
+.prose a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.prose a:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+/* List styles */
+.prose ul, .prose ol {
+  color: #d1d5db;
+}
+
+.prose li {
+  margin: 0.5rem 0;
+}
+
+/* Table styles for better dark theme */
+.prose table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  background-color: #111827;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.prose th {
+  background-color: #1f2937;
+  color: #f9fafb;
+  font-weight: 600;
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #374151;
+}
+
+.prose td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #374151;
+  color: #e5e7eb;
+}
+
+/* Blockquote styles */
+.prose blockquote {
+  border-left: 4px solid #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+/* Custom animation for loading spinners */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Custom pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Enhanced focus styles */
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Terminal-like glow effect for important elements */
+.terminal-glow {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+/* Syntax highlighting overrides for better dark theme */
+.hljs {
+  background: #111827 !important;
+  color: #e5e7eb !important;
+}
+
+/* Custom utility classes */
+.text-shadow {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* small helper styles */
+html, body, #root {
+  height: 100%;
+}
+
+/* Global font overrides for common elements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Geist', sans-serif;
+  font-weight: 300;
+}
+
+p, span, div, li, td, th {
+  font-family: 'Geist', sans-serif;
+  font-weight: 200;
+}
+
+button, input, select, textarea {
+  font-family: 'Geist', sans-serif;
+  font-weight: 200;
+  font-size: 14px;
+}
+
+/* Preserve monospace for code elements */
+code, pre, .font-mono, .font-mono-dense {
+  font-family: 'JetBrains Mono', monospace !important;
+}

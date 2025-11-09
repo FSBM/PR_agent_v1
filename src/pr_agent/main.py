@@ -64,7 +64,7 @@ Examples:
         print("Expected format: https://github.com/owner/repo/pull/123")
         sys.exit(1)
     
-    print(f"🚀 Starting PR-Agent analysis for: {pr_url}")
+    print(f"Starting PR-Agent analysis for: {pr_url}")
     print("=" * 80)
     
     try:
@@ -83,7 +83,7 @@ Examples:
         deep_security = agents.deep_security_agent()
         
         # Initialize tasks
-        print("📝 Setting up tasks...")
+        print("[INFO] Setting up tasks...")
         tasks = PRTasks()
         
         fetch_task = tasks.fetch_diff_task(diff_fetcher, pr_url)
@@ -99,7 +99,7 @@ Examples:
         report_task = tasks.generate_report_task(report_writer, pr_url)
         
         # Create crew with hierarchical process
-        print("🔧 Assembling enhanced security crew...")
+        print("[SYSTEM] Assembling enhanced security crew...")
         crew = Crew(
             agents=[
                 diff_fetcher, 
@@ -125,20 +125,20 @@ Examples:
         )
         
         # Execute the crew
-        print("🎯 Starting enhanced security PR analysis...")
-        print("🔍 Security agents activated:")
-        print("  ⚡ Dependency Security Scanner")
-        print("  📊 Change Chunk Analyzer")  
-        print("  🔒 Deep Security Analyzer")
-        print("  🔍 Heuristic Scanner")
-        print("  🏗️  Architectural Analyzer")
+        print("[ANALYSIS] Starting enhanced security PR analysis...")
+        print("[INFO] Security agents activated:")
+        print("  - Dependency Security Scanner")
+        print("  - Change Chunk Analyzer")  
+        print("  - Deep Security Analyzer")
+        print("  - Heuristic Scanner")
+        print("  - Architectural Analyzer")
         print("-" * 40)
         
         result = crew.kickoff(inputs={'pr_url': pr_url})
         
         print("-" * 40)
-        print("✅ Enhanced security PR analysis completed!")
-        print(f"🔍 Security layers analyzed:")
+        print("[SUCCESS] Enhanced security PR analysis completed!")
+        print("[INFO] Security layers analyzed:")
         print("  • Dependency vulnerabilities")
         print("  • Large change breakdown") 
         print("  • Deep security patterns")

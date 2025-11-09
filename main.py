@@ -73,7 +73,7 @@ Examples:
         report_writer = agents.report_writer_agent()
         
         # Initialize tasks
-        print("📝 Setting up tasks...")
+        print("[INFO] Setting up tasks...")
         tasks = PRTasks()
         
         fetch_task = tasks.fetch_diff_task(diff_fetcher, pr_url)
@@ -82,7 +82,7 @@ Examples:
         report_task = tasks.generate_report_task(report_writer, pr_url)
         
         # Create crew with hierarchical process
-        print("🔧 Assembling crew...")
+        print("[SYSTEM] Assembling crew...")
         crew = Crew(
             agents=[supervisor, diff_fetcher, heuristic_scanner, architect, report_writer],
             tasks=[fetch_task, heuristic_task, architectural_task, report_task],
@@ -92,21 +92,21 @@ Examples:
         )
         
         # Execute the crew
-        print("🎯 Starting PR analysis...")
+        print("[ANALYSIS] Starting PR analysis...")
         print("-" * 40)
         
         result = crew.kickoff(inputs={'pr_url': pr_url})
         
         print("-" * 40)
-        print("✅ PR-Agent analysis completed!")
+        print("[SUCCESS] PR-Agent analysis completed!")
         print("\nFinal Result:")
         print(result)
         
     except KeyboardInterrupt:
-        print("\n❌ Analysis interrupted by user")
+        print("\n[ERROR] Analysis interrupted by user")
         sys.exit(1)
     except Exception as e:
-        print(f"❌ Error during analysis: {str(e)}")
+        print(f"[ERROR] Error during analysis: {str(e)}")
         print("\nPlease check:")
         print("1. Your GITHUB_TOKEN is valid and has necessary permissions")
         print("2. Your GOOGLE_API_KEY is valid")
