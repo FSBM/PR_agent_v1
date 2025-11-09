@@ -20,20 +20,25 @@ app = FastAPI(title="PR Agent Runner")
 origins = [
     "http://localhost:3000",  # Local development
     "http://127.0.0.1:3000",  # Local development
-    "https://your-project-name.vercel.app",  # Replace with your actual Vercel URL
+    "https://pr-agent-v1.vercel.app",  # Your Vercel URL
+    # preview deployments handled by allow_origin_regex below
 ]
 
 # In production, you might want to be more restrictive
 if os.getenv("ENVIRONMENT") == "production":
     origins = [
-        "https://your-project-name.vercel.app",  # Replace with your actual Vercel URL
+        "https://pr-agent-v1.vercel.app",  # Your Vercel URL
+        # preview deployments handled by allow_origin_regex below
     ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    # Allow preview deployments like: https://pr-agent-v1-git-main.fsbm.vercel.app
+    allow_origin_regex=r"^https://pr-agent-v1(-.*)?\.vercel\.app$",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    # Permit all methods for preflight/OPTIONS handling
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
