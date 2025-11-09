@@ -6,6 +6,7 @@ import traceback
 import io
 import contextlib
 import re
+import os
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, HTMLResponse, StreamingResponse
@@ -15,12 +16,24 @@ from pydantic import BaseModel
 
 app = FastAPI(title="PR Agent Runner")
 
-# Allow CORS for local testing
+# Configure CORS for production and development
+origins = [
+    "http://localhost:3000",  # Local development
+    "http://127.0.0.1:3000",  # Local development
+    "https://your-project-name.vercel.app",  # Replace with your actual Vercel URL
+]
+
+# In production, you might want to be more restrictive
+if os.getenv("ENVIRONMENT") == "production":
+    origins = [
+        "https://your-project-name.vercel.app",  # Replace with your actual Vercel URL
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
